@@ -38,7 +38,21 @@ class MockOfflineProvider(BaseLLMProvider):
         prompt_lower = prompt.lower()
         
         # Mô phỏng nhận diện intent gọi Tool
-        if "sv2026001" in prompt_lower and "đặt lịch" in prompt_lower:
+        if "sv9999999" in prompt_lower:
+            return {
+                "type": "tool_call",
+                "tool_name": "academic_query",
+                "arguments": {"student_id": "SV9999999"},
+                "thought": "Người dùng muốn tra cứu thông tin học vụ của sinh viên SV9999999. Tôi sẽ gọi tool academic_query."
+            }
+        elif "sv2026002" in prompt_lower and ("đặt lịch" in prompt_lower or "hẹn" in prompt_lower):
+            return {
+                "type": "tool_call",
+                "tool_name": "academic_query",
+                "arguments": {"student_id": "SV2026002"},
+                "thought": "Người dùng muốn tra cứu thông tin và cố vấn của SV2026002 để đặt lịch hẹn. Tôi sẽ gọi tool academic_query."
+            }
+        elif "sv2026001" in prompt_lower and "đặt lịch" in prompt_lower:
             return {
                 "type": "tool_call",
                 "tool_name": "schedule_appointment",

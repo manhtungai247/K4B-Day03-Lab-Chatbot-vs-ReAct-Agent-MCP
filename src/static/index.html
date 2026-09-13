@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VinUni AI - Chatbot vs ReAct Agent (MCP Enhanced) Demo Platform</title>
+  <meta name="description" content="Nền tảng kiểm thử và trình diễn trực quan so sánh Chatbot Baseline vs ReAct Agent kết nối Model Context Protocol (MCP) Đại học VinUni.">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo">VU</div>
+      <div class="brand-title">
+        <h1>VinUni AI Agent Platform <span class="badge-lab">Day 03 Lab</span></h1>
+        <p>Học viên: <strong>Trần Mạnh Tùng</strong> (MSSV: 2A202602879) — ReAct Agent & MCP</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Live Provider Switcher -->
+      <div class="provider-toggle-group" id="providerToggleGroup">
+        <button class="provider-btn active" id="btnGemini" onclick="switchProvider('gemini')">
+          ⚡ Google Gemini
+        </button>
+        <button class="provider-btn" id="btnMock" onclick="switchProvider('mock')">
+          🛡️ Mock Offline
+        </button>
+      </div>
+
+      <!-- Server Status Dot -->
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span id="serverStatusText">MCP Server Connected</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTAINER ==================== -->
+  <div class="app-container">
+
+    <!-- ==================== LEFT SIDEBAR ==================== -->
+    <aside class="app-sidebar">
+      
+      <!-- Section 1: 5 Test Cases Presets -->
+      <div class="sidebar-section">
+        <h3>
+          <span>Bộ 5 Test Cases</span>
+          <span style="font-size: 10px; color: var(--agent-cyan);">Click để thử</span>
+        </h3>
+        <div class="test-cases-list" id="testCasesList">
+          <!-- Dynamically populated via JS -->
+          <div class="tc-card" onclick="loadTestCase('TC01')">
+            <div class="tc-card-header">
+              <span class="tc-id">TC01</span>
+              <span class="tc-badge low">Direct Query</span>
+            </div>
+            <p class="tc-question">Quy chế học vụ cơ bản VinUni...</p>
+          </div>
+          <div class="tc-card" onclick="loadTestCase('TC02')">
+            <div class="tc-card-header">
+              <span class="tc-id">TC02</span>
+              <span class="tc-badge medium">Single Tool</span>
+            </div>
+            <p class="tc-question">Tra cứu học vụ sinh viên SV2026001...</p>
+          </div>
+          <div class="tc-card" onclick="loadTestCase('TC03')">
+            <div class="tc-card-header">
+              <span class="tc-id">TC03</span>
+              <span class="tc-badge medium">Tool Booking</span>
+            </div>
+            <p class="tc-question">Đặt lịch hẹn tư vấn cho SV2026001...</p>
+          </div>
+          <div class="tc-card" onclick="loadTestCase('TC04')">
+            <div class="tc-card-header">
+              <span class="tc-id">TC04</span>
+              <span class="tc-badge high">Multi-step</span>
+            </div>
+            <p class="tc-question">Tra cứu cố vấn SV2026002 và đặt lịch...</p>
+          </div>
+          <div class="tc-card" onclick="loadTestCase('TC05')">
+            <div class="tc-card-header">
+              <span class="tc-id">TC05</span>
+              <span class="tc-badge medium">Edge Case</span>
+            </div>
+            <p class="tc-question">Tra cứu sinh viên không tồn tại SV9999999...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: MCP Tools Registry -->
+      <div class="sidebar-section">
+        <h3>
+          <span>MCP Tools Đã Đăng Ký</span>
+          <span style="font-size: 10px; color: var(--success-emerald);">JSON-RPC 2.0</span>
+        </h3>
+        <div id="mcpToolsList">
+          <div class="mcp-tool-pill">
+            <div>
+              <div class="mcp-tool-name">academic_query</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Tra cứu học vụ sinh viên</div>
+            </div>
+            <span class="mcp-tool-status">Active</span>
+          </div>
+          <div class="mcp-tool-pill">
+            <div>
+              <div class="mcp-tool-name">schedule_appointment</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Đặt lịch tư vấn với Cố vấn</div>
+            </div>
+            <span class="mcp-tool-status">Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Student Database Quick View -->
+      <div class="sidebar-section">
+        <h3>
+          <span>CSDL Sinh Viên VinUni</span>
+          <span style="font-size: 10px; color: var(--warning-amber);">Mock DB</span>
+        </h3>
+        <div id="studentDbList">
+          <!-- Populated by JS -->
+        </div>
+        <button class="btn-add-student" id="btnOpenAddModal" onclick="openAddStudentModal()">
+          + Thêm sinh viên vào CSDL
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ==================== MAIN WORKSPACE ==================== -->
+    <main class="main-workspace">
+
+      <!-- Navigation Tabs -->
+      <nav class="workspace-tabs">
+        <button class="tab-btn active" id="tabBtnChat" onclick="switchTab('chat')">
+          💬 ReAct Live Stream
+        </button>
+        <button class="tab-btn" id="tabBtnArena" onclick="switchTab('arena')">
+          ⚔️ Side-by-Side Arena (Chatbot vs ReAct)
+        </button>
+        <button class="tab-btn" id="tabBtnSandbox" onclick="switchTab('sandbox')">
+          🧪 MCP Tool Sandbox
+        </button>
+        <button class="tab-btn" id="tabBtnWaterfall" onclick="switchTab('waterfall')">
+          📊 Waterfall Trace Visualizer
+        </button>
+      </nav>
+
+      <!-- TAB CONTENT AREA -->
+      <div class="tab-content-area">
+
+        <!-- ===== TAB 1: INTERACTIVE REACT CHAT & STREAM ===== -->
+        <section class="tab-pane active" id="paneChat">
+          <div class="chat-container">
+            
+            <div class="chat-toolbar">
+              <label class="step-mode-toggle" title="Chế độ cho phép người thuyết trình bấm nút chạy từng bước Thought -> Action -> Observation">
+                <span class="switch">
+                  <input type="checkbox" id="stepModeCheckbox">
+                  <span class="slider"></span>
+                </span>
+                <span>Chế độ ReAct Step-by-Step Debugger ⏭️</span>
+              </label>
+
+              <button class="provider-btn" style="background: rgba(255,255,255,0.05);" onclick="clearChat()">
+                🗑️ Xóa hội thoại
+              </button>
+            </div>
+
+            <!-- Step Controller Bar (Hiển thị khi ở chế độ Step-by-Step) -->
+            <div class="step-controller-bar" id="stepControllerBar">
+              <div>
+                <strong id="stepStatusText" style="color: #A5B4FC;">Đang tạm dừng ở bước 1...</strong>
+                <span style="font-size: 12px; color: var(--text-muted); margin-left: 8px;" id="stepDetailText">Bấm 'Tiếp tục' để cho Agent suy luận bước kế</span>
+              </div>
+              <button class="btn-step-next" id="btnStepNext" onclick="executeNextStep()">
+                Tiếp tục bước tiếp theo ⏭️
+              </button>
+            </div>
+
+            <!-- Chat Messages Flow -->
+            <div class="chat-messages" id="chatMessages">
+              <!-- Welcome Initial Message -->
+              <div class="message-row agent">
+                <div class="react-stream">
+                  <div class="react-card final">
+                    <div class="react-card-header">
+                      <span>🤖 VinUni ReAct Agent (Cấp 3 - MCP Enhanced)</span>
+                      <span class="latency-tag">Ready</span>
+                    </div>
+                    <div class="react-card-body">
+                      Xin chào bạn! Tôi là <strong>Trợ lý Tác tử Học vụ ReAct</strong> của Đại học VinUni. Tôi có thể giải đáp quy chế, kết nối tới <strong>MCP Server</strong> để tra cứu thông tin học tập của bạn, hoặc đặt lịch hẹn tư vấn học vụ với thầy/cô Cố vấn.
+                      <br><br>
+                      <em>👉 Hãy chọn 1 trong 5 Test Cases bên thanh trái hoặc gõ câu hỏi bất kỳ để bắt đầu trải nghiệm!</em>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat Input Form -->
+            <form class="chat-input-bar" id="chatForm" onsubmit="handleChatSubmit(event)">
+              <input type="text" class="chat-input" id="chatInput" placeholder="Nhập câu hỏi học vụ hoặc yêu cầu đặt lịch hẹn... (ví dụ: Tra cứu thông tin sinh viên SV2026001)" autocomplete="off">
+              <button type="submit" class="btn-send" id="btnSend" title="Gửi câu hỏi">
+                ➤
+              </button>
+            </form>
+
+          </div>
+        </section>
+
+        <!-- ===== TAB 2: SIDE-BY-SIDE ARENA ===== -->
+        <section class="tab-pane" id="paneArena">
+          <div class="arena-header">
+            <h2>⚔️ Cuộc Chiến Đối Đầu: Chatbot Baseline vs ReAct Agent</h2>
+            <p>Kiểm chứng trực quan: Tại sao Chatbot thế hệ cũ gặp ảo giác (Hallucination) còn ReAct Agent kết nối MCP đảm bảo chính xác 100%.</p>
+          </div>
+
+          <!-- Prompt Form for Arena -->
+          <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+            <input type="text" class="form-control" style="flex: 1;" id="arenaInput" placeholder="Nhập câu hỏi để so sánh đồng thời (ví dụ: Hãy tra cứu thông tin học vụ của sinh viên SV2026001)">
+            <button class="btn-execute-mcp" style="white-space: nowrap;" id="btnArenaSubmit" onclick="runArenaBattle()">
+              ⚔️ Bắt đầu Đối chứng Đồng thời
+            </button>
+          </div>
+
+          <div class="arena-grid">
+            <!-- Left: Chatbot Baseline -->
+            <div class="arena-panel chatbot">
+              <div class="panel-title">
+                <h3>💬 Chatbot Baseline (Cấp 2)</h3>
+                <span class="badge-flag hallucination" id="badgeChatbotFlag">⚠️ Dễ Ảo giác (No Tool)</span>
+              </div>
+              <div class="arena-output-body" id="arenaChatbotOutput">
+                <p style="color: var(--text-muted); font-style: italic;">Chưa có dữ liệu so sánh. Hãy nhập câu hỏi và nhấn 'Bắt đầu Đối chứng'.</p>
+              </div>
+            </div>
+
+            <!-- Right: ReAct Agent -->
+            <div class="arena-panel react">
+              <div class="panel-title">
+                <h3>🤖 ReAct Agent (Cấp 3 - MCP)</h3>
+                <span class="badge-flag grounded" id="badgeAgentFlag">✅ Dữ liệu Thật (MCP Grounded)</span>
+              </div>
+              <div class="arena-output-body" id="arenaAgentOutput">
+                <p style="color: var(--text-muted); font-style: italic;">Chưa có dữ liệu so sánh. Hãy nhập câu hỏi và nhấn 'Bắt đầu Đối chứng'.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== TAB 3: MCP TOOL SANDBOX ===== -->
+        <section class="tab-pane" id="paneSandbox">
+          <div class="sandbox-layout">
+            
+            <div class="sandbox-form-card">
+              <h3 style="font-size: 16px; margin-bottom: 8px;">🧪 Gọi Trực Tiếp MCP Tool</h3>
+              <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+                Thực thi độc lập qua giao thức MCP JSON-RPC 2.0 mà không cần LLM.
+              </p>
+
+              <div class="form-group">
+                <label for="sandboxToolSelect">Chọn Tool trong Registry:</label>
+                <select class="form-control" id="sandboxToolSelect" onchange="handleSandboxToolChange()">
+                  <option value="academic_query">academic_query (Tra cứu học vụ)</option>
+                  <option value="schedule_appointment">schedule_appointment (Đặt lịch hẹn)</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="groupStudentId">
+                <label for="sandboxStudentId">Mã Sinh Viên (student_id):</label>
+                <input type="text" class="form-control" id="sandboxStudentId" value="SV2026001">
+              </div>
+
+              <div class="form-group" id="groupDatetime" style="display: none;">
+                <label for="sandboxDatetime">Thời gian hẹn (datetime_str):</label>
+                <input type="text" class="form-control" id="sandboxDatetime" value="14:00 15/09/2026">
+              </div>
+
+              <div class="form-group" id="groupAdvisor" style="display: none;">
+                <label for="sandboxAdvisor">Tên Cố Vấn (advisor_name):</label>
+                <input type="text" class="form-control" id="sandboxAdvisor" value="PGS.TS Nguyễn Văn A">
+              </div>
+
+              <button class="btn-execute-mcp" id="btnExecuteSandbox" onclick="executeSandboxTool()">
+                🚀 Gửi Yêu Cầu JSON-RPC tới MCP Server
+              </button>
+            </div>
+
+            <!-- Result Card -->
+            <div class="sandbox-result-card">
+              <div class="sandbox-result-header">
+                <h3>Phản hồi từ vinuni-academic-mcp-server</h3>
+                <span class="json-rpc-badge">Protocol: JSON-RPC 2.0</span>
+              </div>
+              <pre class="json-view" id="sandboxJsonResult" style="flex: 1; font-size: 13px;">
+// Nhấn nút "Gửi Yêu Cầu" để xem gói tin phản hồi chuẩn JSON-RPC từ MCP Server
+{
+  "status": "AWAITING_REQUEST"
+}
+              </pre>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ===== TAB 4: WATERFALL TRACE TIMELINE ===== -->
+        <section class="tab-pane" id="paneWaterfall">
+          
+          <div class="trace-summary-grid">
+            <div class="metric-card">
+              <div class="metric-val" id="metricTotalSteps">9</div>
+              <div class="metric-lbl">Tổng Sự Kiện Trace Đã Ghi</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-val" id="metricAvgLatency">2,340 ms</div>
+              <div class="metric-lbl">Độ Trễ Trung Bình (LLM API)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-val" id="metricToolCalls">4 / 4</div>
+              <div class="metric-lbl">Tỷ Lệ Gọi Tool Thành Công</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-val" style="color: var(--success-emerald);" id="metricPassRate">100%</div>
+              <div class="metric-lbl">Đạt Chuẩn Scoring Rubric</div>
+            </div>
+          </div>
+
+          <div class="waterfall-timeline">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 15px;">Biểu đồ Latency Waterfall (Từ file docs/trace_waterfall.json)</h3>
+              <button class="provider-btn" style="background: rgba(255,255,255,0.05);" onclick="refreshWaterfallTrace()">
+                🔄 Làm mới dữ liệu
+              </button>
+            </div>
+
+            <div id="waterfallRowsContainer">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL: THÊM SINH VIÊN MỚI ==================== -->
+  <div class="modal-overlay" id="addStudentModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>➕ Thêm Sinh Viên Mới vào CSDL</h3>
+        <button class="btn-close-modal" onclick="closeAddStudentModal()">✕</button>
+      </div>
+      <form onsubmit="handleSaveStudent(event)">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Mã Sinh Viên (ID):</label>
+          <input type="text" class="form-control" id="modalStudentId" placeholder="ví dụ: SV2026999" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Họ và Tên:</label>
+          <input type="text" class="form-control" id="modalFullName" placeholder="ví dụ: Nguyễn Văn Demo" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Lớp học:</label>
+          <input type="text" class="form-control" id="modalClass" value="AI-K4" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Điểm GPA:</label>
+          <input type="number" step="0.01" class="form-control" id="modalGpa" value="3.90" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Email sinh viên:</label>
+          <input type="email" class="form-control" id="modalEmail" placeholder="demo.nv@vinuni.edu.vn" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label>Cố vấn Học tập:</label>
+          <input type="text" class="form-control" id="modalAdvisor" value="GS. Vũ Hà Văn" required>
+        </div>
+        <button type="submit" class="btn-execute-mcp" style="width: 100%;">
+          💾 Lưu vào CSDL Thời gian thực
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
