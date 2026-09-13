@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infographic Báo Cáo & Thuyết Trình Demo - VinUni AI Day 03</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    body {
+      background: #060911;
+      padding: 30px 20px;
+      color: #F8FAFC;
+    }
+    .poster-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .poster-header {
+      background: linear-gradient(135deg, rgba(225, 29, 72, 0.15), rgba(99, 102, 241, 0.2));
+      border: 1px solid rgba(225, 29, 72, 0.4);
+      border-radius: var(--radius-xl);
+      padding: 28px 36px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .poster-header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFF;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .poster-header p {
+      font-size: 14px;
+      color: #CBD5E1;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .infocard {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .infocard-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      background: var(--vinuni-red);
+      color: #FFF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: 0 0 12px var(--vinuni-red-glow);
+    }
+    .infocard-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #FFF;
+    }
+    .score-matrix {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.03);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .score-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--success-emerald);
+      background: rgba(16, 185, 129, 0.15);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .arch-diagram {
+      background: #080C16;
+      border: 1px dashed rgba(99, 102, 241, 0.4);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .tool-spec-box {
+      background: rgba(6, 182, 212, 0.06);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+    .trace-flow-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .trace-flow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 28px;
+      bottom: -12px;
+      width: 2px;
+      background: rgba(255,255,255,0.1);
+    }
+    .flow-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #1E293B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      z-index: 2;
+    }
+    .flow-content {
+      flex: 1;
+      background: rgba(255,255,255,0.03);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+    }
+    .btn-back-ui {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--agent-indigo);
+      color: #FFF;
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 13px;
+      transition: var(--transition-fast);
+      margin-bottom: 10px;
+    }
+    .btn-back-ui:hover {
+      background: #4F46E5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="poster-container">
+    <div>
+      <a href="/" class="btn-back-ui">← Quay lại Web UI Demo</a>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="poster-header">
+      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #FDA4AF; font-weight: 700; margin-bottom: 6px;">
+        🏫 VINUNI AI COURSE — DAY 03 LAB DEMO POSTER
+      </div>
+      <h1>BẢN INFOGRAPHIC TRÌNH BÀY DEMO TỔNG QUAN</h1>
+      <p>Học viên: <strong>Trần Mạnh Tùng</strong> (MSSV: <strong>2A202602879</strong>) — Đề tài: <strong>ReAct Agent & Model Context Protocol (MCP)</strong></p>
+    </header>
+
+    <!-- Question 1 & Question 2 Grid -->
+    <div class="grid-2col">
+      
+      <!-- Mục 1: Chọn đề tài gì? Tại sao? -->
+      <div class="infocard">
+        <div class="infocard-header">
+          <div class="step-num">1</div>
+          <div class="infocard-title">Đề Tài & Lý Do Lựa Chọn</div>
+        </div>
+        <div>
+          <h4 style="color: var(--vinuni-red); font-size: 15px; margin-bottom: 8px;">
+            🎓 Trợ lý Học vụ & Lịch hẹn Tư vấn Sinh viên VinUni
+          </h4>
+          <p style="font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 12px;">
+            Hệ thống hỗ trợ sinh viên VinUni tra cứu hồ sơ học vụ (điểm GPA, tín chỉ, trạng thái) và tự động đặt lịch hẹn tư vấn học tập với các Giảng viên / Cố vấn chuyên môn.
+          </p>
+          <div style="background: rgba(225, 29, 72, 0.08); border-left: 3px solid var(--vinuni-red); padding: 10px 14px; border-radius: 4px; font-size: 12.5px; color: #FDA4AF;">
+            <strong>Tại sao chọn?</strong> Chatbot thông thường (Cấp 2) không có quyền truy cập dữ liệu thời gian thực và sẽ bị <strong>ảo giác (hallucination)</strong> hoặc từ chối trả lời. Chỉ có kiến trúc <strong>ReAct Agent kết nối MCP Server</strong> mới có khả năng truy xuất CSDL học vụ và lưu lịch hẹn thực tế.
+          </div>
+        </div>
+      </div>
+
+      <!-- Mục 2: 4 Tiêu chí Agentic Fit -->
+      <div class="infocard">
+        <div class="infocard-header">
+          <div class="step-num">2</div>
+          <div class="infocard-title">Đánh Giá 4 Tiêu Chí Agentic Fit</div>
+        </div>
+        <div class="score-matrix">
+          <div class="score-row">
+            <div>
+              <strong>1. Multi-step Reasoning</strong>
+              <div style="font-size: 11px; color: var(--text-muted);">Tra cứu cố vấn trước ➔ Đặt lịch hẹn sau</div>
+            </div>
+            <span class="score-badge">4 / 5</span>
+          </div>
+
+          <div class="score-row">
+            <div>
+              <strong>2. Tool Interaction</strong>
+              <div style="font-size: 11px; color: var(--text-muted);">Kết nối MCP Server truy xuất CSDL học vụ</div>
+            </div>
+            <span class="score-badge">5 / 5</span>
+          </div>
+
+          <div class="score-row">
+            <div>
+              <strong>3. Dynamic Decision</strong>
+              <div style="font-size: 11px; color: var(--text-muted);">Hành động tiếp theo dựa vào Observation (SUCCESS / NOT_FOUND)</div>
+            </div>
+            <span class="score-badge">4 / 5</span>
+          </div>
+
+          <div class="score-row">
+            <div>
+              <strong>4. Long Horizon Goal</strong>
+              <div style="font-size: 11px; color: var(--text-muted);">Duy trì mục tiêu hoàn tất việc hỗ trợ qua nhiều lượt ReAct</div>
+            </div>
+            <span class="score-badge">4 / 5</span>
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 13px; font-weight: 700; color: var(--success-emerald);">
+          👉 TỔNG ĐIỂM: 17 / 20 (Rất phù hợp triển khai Agent)
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Mục 3: Kiến trúc Agent đã xây dựng -->
+    <div class="infocard">
+      <div class="infocard-header">
+        <div class="step-num">3</div>
+        <div class="infocard-title">Kiến Trúc ReAct Agent & MCP Server Đã Xây Dựng</div>
+      </div>
+      <div class="arch-diagram">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; text-align: center;">
+          
+          <div style="background: #1E293B; padding: 12px 16px; border-radius: 8px; flex: 1; min-width: 160px; border: 1px solid var(--border-color);">
+            <div style="font-size: 20px;">👤</div>
+            <strong>User / Sinh viên</strong>
+            <div style="font-size: 11px; color: var(--text-muted);">Web UI / CLI Query</div>
+          </div>
+
+          <div style="color: var(--agent-indigo); font-weight: 700;">➔</div>
+
+          <div style="background: rgba(99, 102, 241, 0.15); border: 1px solid var(--agent-indigo); padding: 12px 16px; border-radius: 8px; flex: 1.2; min-width: 180px;">
+            <div style="font-size: 20px;">🤖</div>
+            <strong>Agent Core (src/app.py)</strong>
+            <div style="font-size: 11px; color: #A5B4FC;">ReAct Loop (Thought ➔ Action)</div>
+          </div>
+
+          <div style="color: var(--agent-cyan); font-weight: 700;">➔ JSON-RPC ➔</div>
+
+          <div style="background: rgba(6, 182, 212, 0.15); border: 1px solid var(--agent-cyan); padding: 12px 16px; border-radius: 8px; flex: 1.3; min-width: 200px;">
+            <div style="font-size: 20px;">🌐</div>
+            <strong>MCPAcademicServer</strong>
+            <div style="font-size: 11px; color: #67E8F9;">src/mcp_server.py (JSON-RPC 2.0)</div>
+          </div>
+
+          <div style="color: var(--warning-amber); font-weight: 700;">➔</div>
+
+          <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid var(--warning-amber); padding: 12px 16px; border-radius: 8px; flex: 1.2; min-width: 180px;">
+            <div style="font-size: 20px;">🗄️</div>
+            <strong>Backend Execution Layer</strong>
+            <div style="font-size: 11px; color: #FCD34D;">academic_query | schedule_appointment</div>
+          </div>
+
+        </div>
+        <div style="margin-top: 14px; text-align: center; font-size: 12px; color: var(--text-muted);">
+          🔄 <strong>Chu trình khép kín:</strong> LLM Đề xuất Action ➔ Gửi JSON-RPC sang MCP Server ➔ Nhận Observation ➔ Tổng hợp Final Answer ➔ Ghi vết vào <code style="color:var(--agent-cyan);">docs/trace_waterfall.json</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mục 4 & Mục 5 Grid -->
+    <div class="grid-2col">
+
+      <!-- Mục 4: Danh sách Tools và Tác dụng -->
+      <div class="infocard">
+        <div class="infocard-header">
+          <div class="step-num">4</div>
+          <div class="infocard-title">Danh Sách Tool & Tác Dụng</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          
+          <div class="tool-spec-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: var(--agent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 14px;">🛠️ academic_query</strong>
+              <span style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: #67E8F9; padding: 2px 6px; border-radius: 4px;">READ ONLY</span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 6px;">
+              <strong>Tác dụng:</strong> Tra cứu hồ sơ học vụ của sinh viên (Họ tên, lớp, GPA, Email, trạng thái và Cố vấn học tập) theo mã sinh viên.
+            </p>
+            <div style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">
+              Tham số: <code>student_id (string, required)</code>
+            </div>
+          </div>
+
+          <div class="tool-spec-box" style="background: rgba(245, 158, 11, 0.06); border-color: rgba(245, 158, 11, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: var(--warning-amber); font-family: 'JetBrains Mono', monospace; font-size: 14px;">🛠️ schedule_appointment</strong>
+              <span style="font-size: 10px; background: rgba(245, 158, 11, 0.2); color: #FCD34D; padding: 2px 6px; border-radius: 4px;">WRITE ACTION</span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 6px;">
+              <strong>Tác dụng:</strong> Đặt lịch hẹn tư vấn học vụ với Cố vấn học tập, sinh mã booking và lưu vào hệ thống.
+            </p>
+            <div style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">
+              Tham số: <code>student_id, datetime_str, advisor_name</code>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Mục 5: Demo 1-2 Câu hỏi & Trace Log -->
+      <div class="infocard">
+        <div class="infocard-header">
+          <div class="step-num">5</div>
+          <div class="infocard-title">Demo Minh Họa & Trace Log</div>
+        </div>
+        <div>
+          <div style="font-size: 12.5px; color: #A5B4FC; font-weight: 600; margin-bottom: 10px;">
+            📌 Câu hỏi Demo: <em>"Hãy tra cứu thông tin học vụ của sinh viên SV2026001."</em>
+          </div>
+
+          <div class="trace-flow-step">
+            <div class="flow-icon">🧠</div>
+            <div class="flow-content">
+              <strong>Thought (LLM):</strong> Nhận diện yêu cầu tra cứu sinh viên SV2026001. Đề xuất gọi tool <code>academic_query</code>.
+            </div>
+          </div>
+
+          <div class="trace-flow-step">
+            <div class="flow-icon">🛠️</div>
+            <div class="flow-content">
+              <strong>Action (MCP Call):</strong> <code>academic_query({"student_id": "SV2026001"})</code>
+            </div>
+          </div>
+
+          <div class="trace-flow-step">
+            <div class="flow-icon">👁️</div>
+            <div class="flow-content">
+              <strong>Observation (Server JSON-RPC):</strong> <code>{"status": "SUCCESS", "full_name": "Nguyễn Văn An", "gpa": 3.85, "advisor": "PGS.TS Nguyễn Văn A"}</code>
+            </div>
+          </div>
+
+          <div class="trace-flow-step">
+            <div class="flow-icon">🏁</div>
+            <div class="flow-content" style="border-left: 3px solid var(--success-emerald); color: #6EE7B7;">
+              <strong>Final Answer:</strong> Sinh viên Nguyễn Văn An (SV2026001), Lớp AI-K4, GPA: 3.85, Cố vấn: PGS.TS Nguyễn Văn A. (Độ trễ: <strong>2403.52 ms</strong>)
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Signature -->
+    <footer style="text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border-color);">
+      VinUni AI Course — Day 03 Lab: Chatbot vs ReAct Agent (MCP Enhanced) | Ký tên: <strong>Trần Mạnh Tùng - 2A202602879</strong>
+    </footer>
+
+  </div>
+
+</body>
+</html>
